@@ -1,8 +1,15 @@
-import { Application, config } from './deps.ts';
+import { Application, oakCors, config } from './deps.ts';
 
 import router from './routes.ts';
 
 const app = new Application();
+
+app.use(
+    oakCors({
+      origin: 'http://localhost:3000',
+      credentials: true
+    }),
+);
 
 app.use(async (ctx, next) => {
     await next();

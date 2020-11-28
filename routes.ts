@@ -4,9 +4,8 @@ const cache = new Map<string, { user: UserData, guilds: GuildData[]}>();
 
 const router = new Router();
 
-router.get('/login', (ctx) => ctx.response.redirect(config.oAuthLink));
-
-router.get('/auth', async (ctx) => {    
+// Only discord oAuth2.0 interacts with this request
+router.get('/auth', async (ctx) => {
     const code = ctx.request.url.searchParams.get('code');
 
     const data: any = {
@@ -33,12 +32,13 @@ router.get('/auth', async (ctx) => {
     const jwt = await createJWT({ alg: 'HS512', typ: 'JWT', exp: Date.now() + 1800000 }, { id: userData.id }, config.jwtSecret);
     ctx.cookies.set('token', jwt);
 
-    ctx.response.redirect('/dashboard');
-
     const guilds = await getGuildList(tokenDataJson);
     cache.set(userData.id, { user: userData, guilds: guilds });
+
+    ctx.response.redirect('http://localhost:3000/dashboard');
 });
 
+// Our api interacts with this request
 router.get('/api/userdata', async (ctx) => {
     const token = ctx.cookies.get('token');
     if (token == null) {
@@ -47,6 +47,7 @@ router.get('/api/userdata', async (ctx) => {
         const payload = await verifyJWT(token, config.jwtSecret, "HS512");
         const id = payload.id as string;
 
+        ctx.response.status = 200;
         ctx.response.body = cache.get(id)?.user;
     }
 });
