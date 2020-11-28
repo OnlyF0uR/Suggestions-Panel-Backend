@@ -1,1 +1,2 @@
-# Suggestions-Panel-Backend
+# Panel Backend
+Panel backend for the Suggestions bot.
