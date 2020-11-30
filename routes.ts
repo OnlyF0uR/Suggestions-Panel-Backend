@@ -35,7 +35,7 @@ router.get('/auth', async (ctx) => {
     const guilds = await getGuildList(tokenDataJson);
     cache.set(userData.id, { user: userData, guilds: guilds });
 
-    ctx.response.redirect('http://localhost:3000/dashboard');
+    ctx.response.redirect('http://localhost:3000/discordbots/stats');
 });
 
 // Our api interacts with this request
